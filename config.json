@@ -14,7 +14,7 @@
   },
   "arguments": {
     "execute": {
-      "url": "https://webhook.site/f659ebf1-35f4-4fcf-9306-9458eb768746",
+      "url": "https://webhook.site/8422fc5e-aff7-4bb1-8c29-a553753d3cd9",
       "verb": "POST",
       "inArguments": [],
       "outArguments": [],
@@ -37,21 +37,21 @@
   },
   "configurationArguments": {
     "save": {
-      "url": "https://webhook.site/f659ebf1-35f4-4fcf-9306-9458eb768746",
+      "url": "https://webhook.site/8422fc5e-aff7-4bb1-8c29-a553753d3cd9",
       "verb": "POST"
     },
     "publish": {
-      "url": "https://webhook.site/f659ebf1-35f4-4fcf-9306-9458eb768746",
+      "url": "https://webhook.site/8422fc5e-aff7-4bb1-8c29-a553753d3cd9",
       "verb": "POST"
     },
     "validate": {
-      "url": "https://webhook.site/f659ebf1-35f4-4fcf-9306-9458eb768746",
+      "url": "https://webhook.site/8422fc5e-aff7-4bb1-8c29-a553753d3cd9",
       "verb": "POST"
     }
   },
   "userInterfaces": {
     "configModal": {
-      "url": "https://drikahz.github.io/teste/index.html",
+      "url": "https://raw.githubusercontent.com/drikahz/activity-mkt-cloud/refs/heads/main/index.html",
       "height": 600,
       "width": 800
     }
