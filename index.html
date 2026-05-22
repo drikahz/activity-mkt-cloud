@@ -62,6 +62,13 @@
       box-shadow:0 0 0 3px rgba(0,112,210,0.15);
     }
 
+    .error{
+      margin-top:8px;
+      color:#d92d20;
+      font-size:13px;
+      display:none;
+    }
+
     .info{
       margin-top:25px;
       padding:16px;
@@ -93,13 +100,27 @@
   <h3>Configuração do WhatsApp</h3>
 
   <div class="field">
-    <label>Template da mensagem</label>
 
-    <select id="mensagem">
-      <option value="carrinho_abandonado" selected>
+    <label>Template da mensagem *</label>
+
+    <select id="mensagem" required>
+      <option value="">
+        Selecione um template
+      </option>
+
+      <option
+        value="carrinho_abandonado">
         Carrinho Abandonado
       </option>
     </select>
+
+    <div
+      class="error"
+      id="mensagemErro">
+
+      Selecione um template para continuar.
+    </div>
+
   </div>
 
   <div class="info">
@@ -116,9 +137,13 @@
 <script>
 
   const connection = new Postmonger.Session();
+
   let activity = {};
 
-  // 🔹 Carrega dados ao abrir a activity
+  // ===================================================
+  // INIT
+  // ===================================================
+
   connection.on('initActivity', function(data) {
 
     activity = data || {};
@@ -127,13 +152,16 @@
       activity?.arguments?.execute?.inArguments || [];
 
     const mensagem =
-      inArgs[0]?.mensagem || "Carrinho Abandonado";
+      inArgs[0]?.mensagem || "";
 
     document.getElementById("mensagem").value =
       mensagem;
   });
 
-  // 🔹 Handshake necessário
+  // ===================================================
+  // HANDSHAKE
+  // ===================================================
+
   connection.on('requestedTokens', function(tokens) {});
   connection.on('requestedEndpoints', function(endpoints) {});
 
@@ -141,7 +169,10 @@
   connection.trigger('requestTokens');
   connection.trigger('requestEndpoints');
 
-  // 🔹 Habilita botão "Concluído"
+  // ===================================================
+  // BOTÃO
+  // ===================================================
+
   connection.trigger('updateButton', {
     button: 'next',
     text: 'Concluído',
@@ -149,30 +180,53 @@
     enabled: true
   });
 
-  // 🔹 Quando clicar em concluído
+  // ===================================================
+  // CLICK NEXT
+  // ===================================================
+
   connection.on('clickedNext', function() {
     salvar();
   });
 
-  // 🔹 Salvar configuração
+  // ===================================================
+  // SAVE
+  // ===================================================
+
   function salvar() {
 
     const mensagem =
       document.getElementById("mensagem").value;
 
-    // Garante estrutura
+    const erro =
+      document.getElementById("mensagemErro");
+
+    // 🔥 valida obrigatório
+    if (!mensagem) {
+
+      erro.style.display = "block";
+
+      return;
+    }
+
+    erro.style.display = "none";
+
+    // garante estrutura
     activity.arguments =
       activity.arguments || {};
 
     activity.arguments.execute =
       activity.arguments.execute || {};
 
-    // Dados enviados ao webhook/backend
+    // payload enviado ao backend
     activity.arguments.execute.inArguments = [
       {
         "template": mensagem,
-        "celular": "{{Event.DEAudience-1.celular}}",
-        "email": "{{Event.DEAudience-1.email}}"
+
+        "celular":
+          "{{Event.DEAudience-1.celular}}",
+
+        "email":
+          "{{Event.DEAudience-1.email}}"
       }
     ];
 
@@ -181,13 +235,13 @@
 
     activity.metaData.isConfigured = true;
 
-    // Atualiza activity
+    // salva activity
     connection.trigger(
       'updateActivity',
       activity
     );
 
-    // Fecha modal
+    // fecha modal
     connection.trigger('nextStep');
   }
 
