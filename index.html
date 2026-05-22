@@ -5,6 +5,7 @@
   <script src="https://unpkg.com/postmonger"></script>
 
   <style>
+
     *{
       box-sizing:border-box;
     }
@@ -12,7 +13,7 @@
     body{
       margin:0;
       padding:30px;
-      font-family: Arial, sans-serif;
+      font-family:Arial,sans-serif;
       background:#f4f6f9;
       color:#333;
     }
@@ -21,9 +22,9 @@
       background:#fff;
       border-radius:16px;
       padding:30px;
-      box-shadow:0 4px 20px rgba(0,0,0,0.08);
       max-width:600px;
       margin:0 auto;
+      box-shadow:0 4px 20px rgba(0,0,0,0.08);
     }
 
     h3{
@@ -52,8 +53,6 @@
       border-radius:10px;
       font-size:15px;
       background:#fff;
-      transition:0.2s;
-      appearance:none;
     }
 
     select:focus{
@@ -63,33 +62,34 @@
     }
 
     .error{
+      display:none;
       margin-top:8px;
       color:#d92d20;
       font-size:13px;
-      display:none;
     }
 
     .info{
       margin-top:25px;
       padding:16px;
       background:#f7f9fc;
-      border-radius:10px;
       border-left:4px solid #0070d2;
+      border-radius:10px;
       font-size:14px;
-      line-height:1.5;
       color:#555;
+      line-height:1.5;
     }
 
     .tag{
       display:inline-block;
       margin-top:10px;
       padding:6px 12px;
+      border-radius:999px;
       background:#e8f3ff;
       color:#0070d2;
-      border-radius:999px;
       font-size:12px;
       font-weight:bold;
     }
+
   </style>
 </head>
 
@@ -97,21 +97,24 @@
 
 <div class="container">
 
-  <h3>Configuração do WhatsApp</h3>
+  <!-- <h3>Configuração do WhatsApp</h3> -->
 
   <div class="field">
 
-    <label>Template da mensagem *</label>
+    <label>
+      Template da mensagem *
+    </label>
 
-    <select id="mensagem" required>
+    <select id="mensagem">
+
       <option value="">
         Selecione um template
       </option>
 
-      <option
-        value="carrinho_abandonado">
+      <option value="Carrinho Abandonado">
         Carrinho Abandonado
       </option>
+
     </select>
 
     <div
@@ -119,89 +122,119 @@
       id="mensagemErro">
 
       Selecione um template para continuar.
+
     </div>
 
   </div>
 
   <div class="info">
+
     Esta activity envia automaticamente os dados do contato
     para integração com backend externo e disparo via WhatsApp.
 
     <div class="tag">
       Integração ativa
     </div>
+
   </div>
 
 </div>
 
 <script>
 
-  const connection = new Postmonger.Session();
+  const connection =
+    new Postmonger.Session();
 
   let activity = {};
 
-  // ===================================================
+  // ==========================================
   // INIT
-  // ===================================================
+  // ==========================================
 
-  connection.on('initActivity', function(data) {
+  connection.on(
+    'initActivity',
+    function(data) {
 
-    activity = data || {};
+      activity = data || {};
 
-    const inArgs =
-      activity?.arguments?.execute?.inArguments || [];
+      const inArgs =
+        activity?.arguments?.execute?.inArguments || [];
 
-    const mensagem =
-      inArgs[0]?.mensagem || "";
+      const mensagem =
+        inArgs[0]?.mensagem || "";
 
-    document.getElementById("mensagem").value =
-      mensagem;
-  });
+      // 🔥 restaura valor corretamente
+      document
+        .getElementById("mensagem")
+        .value = mensagem;
 
-  // ===================================================
+    }
+  );
+
+  // ==========================================
   // HANDSHAKE
-  // ===================================================
+  // ==========================================
 
-  connection.on('requestedTokens', function(tokens) {});
-  connection.on('requestedEndpoints', function(endpoints) {});
+  connection.on(
+    'requestedTokens',
+    function(tokens) {}
+  );
+
+  connection.on(
+    'requestedEndpoints',
+    function(endpoints) {}
+  );
 
   connection.trigger('ready');
+
   connection.trigger('requestTokens');
+
   connection.trigger('requestEndpoints');
 
-  // ===================================================
+  // ==========================================
   // BOTÃO
-  // ===================================================
+  // ==========================================
 
-  connection.trigger('updateButton', {
-    button: 'next',
-    text: 'Concluído',
-    visible: true,
-    enabled: true
-  });
+  connection.trigger(
+    'updateButton',
+    {
+      button:'next',
+      text:'Concluído',
+      visible:true,
+      enabled:true
+    }
+  );
 
-  // ===================================================
+  // ==========================================
   // CLICK NEXT
-  // ===================================================
+  // ==========================================
 
-  connection.on('clickedNext', function() {
-    salvar();
-  });
+  connection.on(
+    'clickedNext',
+    function() {
 
-  // ===================================================
+      salvar();
+
+    }
+  );
+
+  // ==========================================
   // SAVE
-  // ===================================================
+  // ==========================================
 
   function salvar() {
 
     const mensagem =
-      document.getElementById("mensagem").value;
+      document
+        .getElementById("mensagem")
+        .value;
 
     const erro =
-      document.getElementById("mensagemErro");
+      document
+        .getElementById("mensagemErro");
 
     // 🔥 valida obrigatório
-    if (!mensagem) {
+    if(!mensagem){
 
       erro.style.display = "block";
 
@@ -210,23 +243,23 @@
 
     erro.style.display = "none";
 
-    // garante estrutura
     activity.arguments =
       activity.arguments || {};
 
     activity.arguments.execute =
       activity.arguments.execute || {};
 
-    // payload enviado ao backend
     activity.arguments.execute.inArguments = [
       {
-        "template": mensagem,
 
-        "celular":
+        template: mensagem,
+
+        celular:
           "{{Event.DEAudience-1.celular}}",
 
-        "email":
+        email:
           "{{Event.DEAudience-1.email}}"
+
       }
     ];
 
@@ -235,14 +268,12 @@
 
     activity.metaData.isConfigured = true;
 
-    // salva activity
+    // 🔥 ISSO salva e fecha corretamente
     connection.trigger(
       'updateActivity',
       activity
     );
 
-    // fecha modal
-    connection.trigger('nextStep');
   }
 
 </script>
