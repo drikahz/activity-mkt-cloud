@@ -46,7 +46,7 @@
       color:#555;
     }
 
-    select{
+    input{
       width:100%;
       padding:14px;
       border:1px solid #dcdfe4;
@@ -55,7 +55,7 @@
       background:#fff;
     }
 
-    select:focus{
+    input:focus{
       outline:none;
       border-color:#0070d2;
       box-shadow:0 0 0 3px rgba(0,112,210,0.15);
@@ -97,31 +97,24 @@
 
 <div class="container">
 
-  <h3>Configuração do WhatsApp</h3>
 
   <div class="field">
 
     <label>
-      Template da mensagem *
+      ID/Nome do Template no Blip *
     </label>
 
-    <select id="mensagem">
-
-      <option value="">
-        Selecione um template
-      </option>
-
-      <option value="carrinho_abandonado">
-        Carrinho Abandonado
-      </option>
-
-    </select>
+    <input
+      type="text"
+      id="mensagem"
+      placeholder="Ex: carrinho_abandonado"
+    />
 
     <div
       class="error"
       id="mensagemErro">
 
-      Selecione um template para continuar.
+      Informe o identificador do template.
 
     </div>
 
@@ -131,6 +124,11 @@
 
     Esta activity envia automaticamente os dados do contato
     para integração com backend externo e disparo via WhatsApp.
+
+    <br><br>
+
+    Informe o identificador do template previamente
+    configurado no Blip.
 
     <div class="tag">
       Integração ativa
@@ -161,9 +159,9 @@
         activity?.arguments?.execute?.inArguments || [];
 
       const mensagem =
-        inArgs[0]?.mensagem || "";
+        inArgs[0]?.template || "";
 
-      // 🔥 restaura valor corretamente
+      // restaura valor
       document
         .getElementById("mensagem")
         .value = mensagem;
@@ -227,13 +225,14 @@
     const mensagem =
       document
         .getElementById("mensagem")
-        .value;
+        .value
+        .trim();
 
     const erro =
       document
         .getElementById("mensagemErro");
 
-    // 🔥 valida obrigatório
+    // valida obrigatório
     if(!mensagem){
 
       erro.style.display = "block";
@@ -268,7 +267,7 @@
 
     activity.metaData.isConfigured = true;
 
-    // 🔥 ISSO salva e fecha corretamente
+    // salva activity
     connection.trigger(
       'updateActivity',
       activity
